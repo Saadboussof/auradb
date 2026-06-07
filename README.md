@@ -93,12 +93,12 @@ curl -X POST http://localhost:8081/api/v1/tenants \
 
 This project is built in iterative phases, proving mastery over different distributed system concepts:
 
-- [x] **Phase 1: Foundation:** Multi-module Maven, Java 21 Records, Reactive Control Plane API, and multi-stage Docker builds.
-- [ ] **Phase 2: Redis Routing:** Storing and retrieving dynamic route maps in-memory.
-- [ ] **Phase 3: Edge Gateway:** Intercepting requests and rewriting URLs dynamically based on Redis lookups.
-- [ ] **Phase 4: Kafka Telemetry:** Producers mimicking DB nodes, consumers evaluating health metrics.
-- [ ] **Phase 5: Automated Failover:** Real-time route swapping when a node goes down.
-- [ ] **Phase 6: Security:** Protecting the gateway with JWT authorization.
+- **Phase 1: Foundation:** Multi-module Maven, Java 21 Records, Reactive Control Plane API, and multi-stage Docker builds.
+- **Phase 2: Redis Routing:** Storing and retrieving dynamic route maps in-memory.
+- **Phase 3: Edge Gateway:** Intercepting requests and rewriting URLs dynamically based on Redis lookups.
+- **Phase 4: Kafka Telemetry:** Producers mimicking DB nodes, consumers evaluating health metrics.
+- **Phase 5: Automated Failover:** Real-time route swapping when a node goes down.
+- **Phase 6: Security:** Protecting the gateway with JWT authorization.
 
 ---
 
