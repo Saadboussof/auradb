@@ -16,6 +16,18 @@ services:
       - redis
       - postgres
 
+  route-service:
+    build:
+      context: .
+      dockerfile: auradb-route-service/Dockerfile
+    container_name: auradb-route-service
+    ports:
+      - "8082:8082"
+    environment:
+      REDIS_HOST: redis
+    depends_on:
+      - redis
+
   # ────────────────────────────────────────────────────────
   # 2. INFRASTRUCTURE BACKING SERVICES
   # ────────────────────────────────────────────────────────

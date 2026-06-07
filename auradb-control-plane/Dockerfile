@@ -5,6 +5,7 @@ WORKDIR /app
 COPY pom.xml .
 COPY auradb-common ./auradb-common
 COPY auradb-control-plane ./auradb-control-plane
+COPY auradb-route-service ./auradb-route-service
 
 # Build the common library and control-plane jar
 # -pl specifies the project/module to build
