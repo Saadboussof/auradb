@@ -1,11 +1,8 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS builder
 WORKDIR /app
 
-# Copy the root POM and the modules needed for the control-plane
-COPY pom.xml .
-COPY auradb-common ./auradb-common
-COPY auradb-control-plane ./auradb-control-plane
-COPY auradb-route-service ./auradb-route-service
+# Copy entire source tree (respecting .dockerignore)
+COPY . .
 
 # Build the common library and control-plane jar
 # -pl specifies the project/module to build

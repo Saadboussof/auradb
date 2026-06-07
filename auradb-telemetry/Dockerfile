@@ -5,12 +5,12 @@ WORKDIR /app
 # Copy entire source tree (respecting .dockerignore)
 COPY . .
 
-# Build only the route service and its dependencies (common)
-RUN mvn clean package -pl auradb-route-service -am -DskipTests
+# Build only the telemetry and its dependencies
+RUN mvn clean package -pl auradb-telemetry -am -DskipTests
 
 # Stage 2: Create the minimal runtime image
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=builder /app/auradb-route-service/target/*.jar app.jar
-EXPOSE 8082
+COPY --from=builder /app/auradb-telemetry/target/*.jar app.jar
+EXPOSE 8083
 ENTRYPOINT ["java", "-jar", "app.jar"]

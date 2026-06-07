@@ -22,6 +22,8 @@
         <module>auradb-common</module>
         <module>auradb-control-plane</module>
         <module>auradb-route-service</module>
+        <module>auradb-gateway</module>
+        <module>auradb-telemetry</module>
     </modules>
 
     <properties>
