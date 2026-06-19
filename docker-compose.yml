@@ -58,6 +58,20 @@ services:
       - redis
       - kafka
 
+  failover:
+    build:
+      context: .
+      dockerfile: auradb-failover/Dockerfile
+    container_name: auradb-failover
+    ports:
+      - "8084:8084"
+    environment:
+      REDIS_HOST: redis
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    depends_on:
+      - redis
+      - kafka
+ 
   # ────────────────────────────────────────────────────────
   # 2. INFRASTRUCTURE BACKING SERVICES
   # ────────────────────────────────────────────────────────

@@ -24,6 +24,7 @@
         <module>auradb-route-service</module>
         <module>auradb-gateway</module>
         <module>auradb-telemetry</module>
+        <module>auradb-failover</module>
     </modules>
 
     <properties>
