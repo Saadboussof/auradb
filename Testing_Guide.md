@@ -62,20 +62,40 @@ This guide explains what each phase in the AuraDB project does, and exactly how 
 
 ---
 
-## 🔴 Phase 6: JWT Security (Not Started Yet)
-**What it does:** Secures the Gateway and Control Plane using JSON Web Tokens (JWT). Only authenticated requests carrying a valid token will be allowed to pass through the Gateway.
+## 🟢 Phase 6: JWT Security (The Bouncer)
+**What it does:** Secures the Gateway using JSON Web Tokens (JWT). Only authenticated requests carrying a valid token are allowed to pass through the Gateway to query databases.
 
-**How to test it (Once Built):**
-1. Send a request to the Gateway without a token -> You should get a `401 Unauthorized`.
-2. Generate a valid JWT token.
-3. Send a request with `Authorization: Bearer <token>` -> The Gateway should validate it and let the request through.
+**How to test it:**
+1. Restart the `auradb-gateway` application in your IDE (Make sure to reload Maven so the new `jjwt` dependencies download).
+2. Send a GET request to your test endpoint without a token: `http://localhost:8080/api/query/netflix/hello-world`.
+   - *Expected Result:* `401 Unauthorized` (Security blocked it!)
+3. Ask the Gateway to generate a valid token for Netflix by sending a GET request to:
+   `http://localhost:8080/api/auth/token?tenantId=netflix`
+4. Copy the long token string from the response.
+5. Go back to your `/hello-world` query in Postman. Open the **Headers** tab.
+6. Add a new Header:
+   - Key: `Authorization`
+   - Value: `Bearer <your_token_here>` (Make sure to include the word "Bearer " before the token)
+7. Send the request again.
+   - *Expected Result:* `200 OK` (The Bouncer validated the token signature and let you through!)
 
 ---
 
-## 🔴 Phase 7: Resilience & Actuator (Not Started Yet)
+## 🟢 Phase 7: Resilience & Actuator (The Circuit Breaker)
 **What it does:** Adds Spring Boot Actuator for `/health` and `/metrics` endpoints, and implements Resilience4j Circuit Breakers in the Gateway so it doesn't crash if a database becomes too slow to respond.
 
-**How to test it (Once Built):**
-1. Visit `http://localhost:8000/actuator/health` to see the system health.
-2. Make the destination database extremely slow (e.g., add a 10-second delay).
-3. Send traffic through the Gateway. The Circuit Breaker should "open" and return a fast error (like `503 Service Unavailable`) instead of hanging and crashing the Gateway.
+**How to test it:**
+1. Restart the `auradb-gateway` application in your IDE (Make sure to reload Maven so the new `actuator` and `resilience4j` dependencies download).
+2. Visit `http://localhost:8080/actuator/health` in your browser. You should see `{"status":"UP"}` and details about Redis health!
+3. Open a new terminal and run a Python server that sleeps for 5 seconds before responding, to simulate a slow database:
+   ```bash
+   python -c "import time, http.server; class Handler(http.server.SimpleHTTPRequestHandler):
+       def do_GET(self):
+           time.sleep(5)
+           super().do_GET()
+   http.server.test(HandlerClass=Handler, port=9001)"
+   ```
+   *(Note: Ensure your `route:netflix` points `activeEndpoint` to port `9001` in Redis)*
+4. Get a fresh JWT token (`http://localhost:8080/api/auth/token?tenantId=netflix`).
+5. Send a request to `http://localhost:8080/api/query/netflix/hello-world` with your token.
+   - *Expected Result:* Instead of hanging for 5 seconds, the Gateway will cut the connection at **3 seconds** and immediately return a **503 Service Unavailable** JSON fallback response indicating the destination database is taking too long!

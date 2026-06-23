@@ -16,16 +16,45 @@ spring:
           uri: http://${CONTROL_PLANE_HOST:localhost}:8081
           predicates:
             - Path=/api/v1/tenants/**
-            
+
         # STATIC ROUTE: Forward Route API calls to Phase 2 (Route Service)
         - id: route-service-route
           uri: http://${ROUTE_SERVICE_HOST:localhost}:8082
           predicates:
             - Path=/api/v1/routes/**
-            
+
         # DYNAMIC ROUTE: This is caught by our GlobalFilter!
         # The 'uri' doesn't matter because the Java filter will overwrite it instantly
         - id: dynamic-query-route
           uri: no://op
           predicates:
             - Path=/api/query/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: databaseCircuitBreaker
+                fallbackUri: forward:/api/fallback/database
+
+# Phase 7: Actuator and Resilience4j Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,circuitbreakers
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 5
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
